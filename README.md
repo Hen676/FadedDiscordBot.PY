@@ -1,0 +1,2 @@
+# Faded Discord Bot
+ 
