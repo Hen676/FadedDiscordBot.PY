@@ -1,0 +1,2 @@
+# Ignore API Keys and Discord ID's
+.env
