@@ -7,6 +7,8 @@ Created on Sat Feb  6 13:04:51 2021
 Todo:
     * clean code
     * add customization for global vars
+    * change all responces over to embed msg format
+    * add reaction control to raid msg (can't react with anything other than 1,2,3,4,7)
 """
 
 import gw2api
