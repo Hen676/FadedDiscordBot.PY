@@ -3,6 +3,8 @@
 Created on Mon Feb  8 15:17:40 2021
 
 @author: Hen676
+
+GW2API
 """
 
 import requests
@@ -20,39 +22,34 @@ extension_guild = "/v2/guild/0f5f2161-607e-e511-aa11-ac162daae275?access_token="
 # global ENV Var
 GW2_KEY = os.getenv('GW2_KEY')
 
-"""
-Call GW2-API and get guild motd.
-Parms:
-    none
-"""
+
 def guild_motd():
-    # request guild data
+    """Call GW2-API and returns guild motd or else None"""
+    
     r = requests.get(url + extension_guild + GW2_KEY, auth=('user', 'pass'))
     if r.status_code != 200:
-        return False
-    
+        return None
     data = r.json()
     return data['motd']
 
-"""
-Call GW2-API and get guild ranks.
-Parms:
-    none
-"""
 def guild_ranks():
+    """Call GW2-API and get guild ranks or else None"""
+    
     r = requests.get(url + extension_rank + GW2_KEY, auth=('user', 'pass'))
     if r.status_code != 200:
         return None
     return r.json()
 
-"""
-Call GW2-API and get members. find if user is in the guild.
-Parms:
-    name - gw2 account name
-"""
-def user_in_guild(name):
+def user_in_guild(message):
+    """
+    Call GW2-API and get members. find if user is in the guild.
+    Parameters:
+        message(object): discord.py message
+    Returns:
+        boolean: true if user is in guild
+    """
     
-    # request guild members
+    name = message.content[6:]
     r = requests.get(url + extension_member + GW2_KEY, auth=('user', 'pass'))
     if r.status_code != 200:
         return False
@@ -66,17 +63,16 @@ def user_in_guild(name):
     print(name + ' is not in guild')
     return False
 
-"""
-Call GW2-API and get members. find if user is in the guild. if yes, print users infomation.
-Parms:
-    message - users requesting message.
-Returns:
-    info - list of 4 elements [rank icon, rank name, user name, date]
-"""
 def user_guild_info(message):
+    """
+    Call GW2-API and get members. find if user is in the guild. if yes, print users infomation.
+    Parameters:
+        message(object): discord.py message
+    Returns:
+        info(list): list of 4 elements [rank icon, rank name, user name, date]
+    """
+    
     name = message.content[7:]
-            
-    # request guild members
     r = requests.get(url + extension_member + GW2_KEY, auth=('user', 'pass'))
     if r.status_code != 200:
         return
@@ -86,12 +82,12 @@ def user_guild_info(message):
     for user in data:
         if user['name'] == name:
             ranks = guild_ranks()
-            if ranks is not None:
+            if ranks != None:
                 for rank in ranks:
                     if user['rank'] == rank['id']:
                         date = user['joined'][8:10] + '/' + user['joined'][5:7] + '/' + user['joined'][:4]
                         info = [rank['icon'],user['rank'],user['name'],date]
                         return info
             else:
-                return 'ranks not found'
-    return name + ' not found'
+                return None
+    return None

@@ -3,6 +3,10 @@
 Created on Sat Feb  6 13:04:51 2021
 
 @author: Hen676
+
+Todo:
+    * clean code
+    * add customization for global vars
 """
 
 import gw2api
@@ -12,7 +16,9 @@ import schedule
 import time
 from dotenv import load_dotenv
 
+# discord bot
 client = discord.Client()
+# load ENV
 load_dotenv()
 
 # global Var
@@ -29,16 +35,6 @@ RAID_CHANNEL = int(os.getenv('RAID_CHANNEL'))
 help_msg = 'List of cmds this bot can do :P\ng!new (account name) - adds user to member role, if their account is part of the guild\ng!user (account name) - shows infomation about user relevent to the guild\ng!update - updates motd if required'
 raid_msg = 'Vote for which Raid Wing you want training for this week'
 
-"""
-TODO:
-    add raid wing vote msg
-    format user info cmd
-    add guild rank emblems to user info
-    add pulling for g!update
-    clean code
-    add customization for global vars
-"""
-
 @client.event
 async def on_ready():
     await client.change_presence(activity=discord.Game(name='Wash Your Hands'))
@@ -49,7 +45,7 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    if not check_guild(message):
+    if not message.guild == client.get_guild(GUILD_ID):
         return
     
     # help
@@ -59,8 +55,7 @@ async def on_message(message):
         
     # new user cmd
     if message.content.startswith('g!new'):
-        print('finding user ' + message.content[6:])
-        if gw2api.user_in_guild(message.content[6:]):
+        if gw2api.user_in_guild(message):
             # add role to user
             role = discord.utils.get(message.author.guild.roles, name=role_member)
             await message.author.add_roles(role)
@@ -69,12 +64,12 @@ async def on_message(message):
     if message.content.startswith('g!user'):
         info = gw2api.user_guild_info(message)
         async with message.channel.typing():
-            embedmsg = discord.Embed(title="User Guild Info", color=0x00ff00)
-            embedmsg.set_thumbnail(info[0])
-            embedmsg.add_field(name='User Name: ', value=info[2])
-            embedmsg.add_field(name='User Rank: ', value=info[1])
-            embedmsg.add_field(name='User Join Date: ', value=info[3])
-            await message.channel.send(embedmsg)
+            embedmsg = discord.Embed(title="Users Guild Info", color=0x00ff00)
+            embedmsg.set_thumbnail(url=info[0])
+            embedmsg.add_field(name='Name: ', value=info[2], inline=False)
+            embedmsg.add_field(name='Rank: ', value=info[1], inline=False)
+            embedmsg.add_field(name='Join Date: ', value=info[3], inline=False)
+            await message.channel.send(embed=embedmsg)
         
     # checks users is admin
     role = discord.utils.get(message.author.guild.roles, name=role_admin)
@@ -89,13 +84,12 @@ async def on_message(message):
 async def motd_update():
     motd = gw2api.guild_motd()
     channel = client.get_channel(MOTD_CHANNEL)
-    if channel.last_message is not None:
+    if channel.last_message != None:
         if channel.last_message.content == motd:
             return
-        async with channel.typing():
+        else:
             await channel.last_message.delete()
-    async with channel.typing():
-        await channel.send(motd)
+    await channel.send(motd)
     
 async def raid_update():
     channel = client.get_channel(RAID_CHANNEL)
@@ -105,9 +99,6 @@ async def raid_update():
     await message.add_reaction('3️⃣')
     await message.add_reaction('4️⃣')
     await message.add_reaction('7️⃣')
-    
-def check_guild(message):
-    return message.guild == client.get_guild(GUILD_ID)
     
 # run client
 schedule.every().monday.at("12:00").do(raid_update)
