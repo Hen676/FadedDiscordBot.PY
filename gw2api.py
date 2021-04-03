@@ -4,10 +4,10 @@ Created on Mon Feb  8 15:17:40 2021
 
 gw2api.py: Access gw2 api infomation and format it.
 """
-
 __author__ = "Henry John Timms"
-__program__ = "Faded Vanguard Discord Bot"
-__version__ = "1.1.0"
+__copyright__ = "Copyright 2021, Henry John Timms"
+__license__ = "MIT"
+__version__ = '1.0.1'
 
 import requests
 import logging

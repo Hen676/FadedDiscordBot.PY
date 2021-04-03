@@ -2,8 +2,17 @@
 """
 Created on Sat Apr  3 14:11:00 2021
 
-@author: Hen676
+main.py: Faded Vanguard Discord Bot main 
+
+Todo:
+    * clean code
+    * add reaction control to raid msg (can't react with anything other than 1,2,3,4,7)
 """
+__author__ = "Henry John Timms"
+__copyright__ = "Copyright 2021, Henry John Timms"
+__license__ = "MIT"
+__program__ = "Faded Vanguard Discord Bot"
+__version__ = "1.0.0"
 
 import logging
 import bot

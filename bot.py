@@ -2,20 +2,12 @@
 """
 Created on Sat Feb  6 13:04:51 2021
 
-main.py: Faded Vanguard Discord Bot main 
-
-Todo:
-    * clean code
-    * add reaction control to raid msg (can't react with anything other than 1,2,3,4,7)
-    
-Bugs:
-    * motd not delting msg
+bot.py: brains of the bot
 """
-
 __author__ = "Henry John Timms"
-__program__ = "Faded Vanguard Discord Bot"
-__version__ = "1.1.0"
-
+__copyright__ = "Copyright 2021, Henry John Timms"
+__license__ = "MIT"
+__version__ = '1.2.0'
 
 import discord 
 from discord.ext import commands, tasks
