@@ -6,7 +6,7 @@ main.py: Faded Vanguard Discord Bot main
 
 Todo:
     * clean code
-    * add reaction control to raid msg (can't react with anything other than 1,2,3,4,7)
+    * add custom rich presences (aka playing "wash your hands")
 """
 __author__ = "Henry John Timms"
 __copyright__ = "Copyright 2021, Henry John Timms"

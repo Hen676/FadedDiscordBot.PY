@@ -10,13 +10,15 @@ __license__ = "MIT"
 __version__ = '1.2.0'
 
 import discord 
-from discord.ext import commands, tasks
+from discord.ext import commands
 import nest_asyncio
 import gw2api
 import config
 import schedule
 import logging
 import members
+import threading
+import time
 from enum import Enum
     
 # raid emoji enum
@@ -26,6 +28,10 @@ class Raid_Emoji(Enum):
     THREE = '3️⃣'
     FOUR = '4️⃣'
     SEVEN = '7️⃣'
+    
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_ 
             
 class Field:
     _name = ''
@@ -37,9 +43,16 @@ class Field:
         self._value = value
         self._inline = inline
 
-class Startup(commands.Cog):
+class Control(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
+    
+    @commands.command(
+        help='Shutdown, for owner use only'
+        )
+    @commands.is_owner()
+    async def shutdown(self, ctx):
+        await ctx.bot.logout()
     
     @commands.Cog.listener()
     async def on_ready(self):
@@ -76,6 +89,8 @@ class User(commands.Cog):
     async def user(self, ctx, arg):
         logging.info('Calling user cmd')
         info = self._gw2api.user_guild_info(arg)
+        if(info == None): 
+            return
         async with ctx.channel.typing():
             embedmsg = embed_msg_builder(title="Users Guild Info",
                                          thumbnail=info._rank_icon,
@@ -98,8 +113,8 @@ class Update(commands.Cog):
         self._raid_disc = raid_disc
         self._gw2api = gw2api
         self._admin_roles = roles
-        schedule.every().monday.at("12:00").do(self.raid_update)
         schedule.every(2).hours.do(self.motd_update)
+        schedule.every().monday.at('13:00').do(self.raid_update)
         
     
     @commands.command(
@@ -108,24 +123,23 @@ class Update(commands.Cog):
         )
     async def update(self, ctx, arg):
         logging.info('Calling update cmd')
-        if any(xs in ctx.author.roles for xs in self._admin_roles):
+        user_role = [role.name for role in ctx.author.roles]
+        if any(xs in user_role for xs in self._admin_roles):
             if arg == 'motd':
                 await self.motd_update()
             if arg == 'raid':
                 await self.raid_update()
 
-    @tasks.loop(seconds=1)
-    async def loop(self):
-        schedule.run_pending()
-
+ 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if payload.channel_id == self._raid_channel:
-            if payload.user_id == self.bot.user.id:
-                if(payload.emoji not in Raid_Emoji._value2member_map_):
-                    print(payload.emoji)
-                #   (payload.message_id).remove_reation(payload.emoji,)
-                # if reation valid, else remove
+            if not Raid_Emoji.has_value(payload.emoji.name):
+                channel = self.bot.get_channel(self._raid_channel)
+                msg = await channel.fetch_message(payload.message_id)
+                if msg.author.id == self.bot.user.id:
+                    await msg.remove_reaction(payload.emoji, payload.member)
+                    
 
     async def motd_update(self):
         motd = self._gw2api.guild_motd()
@@ -146,7 +160,7 @@ class Update(commands.Cog):
                                      thumbnail=self._gw2api.raid_icon())
         message = await channel.send(embed=embedmsg)
         for reaction in Raid_Emoji:
-            message.add_reaction(reaction.value)
+            await message.add_reaction(reaction.value)
         
         
 class Debug(commands.Cog):
@@ -157,10 +171,11 @@ class Debug(commands.Cog):
         self.bot = bot
         self._raid_channel = raid_channel
         self._motd_channel = motd_channel
-        
+    
     @commands.command(
-        help='Debug, for internal use only'
+        help='Debug, for owner use only'
         )
+    @commands.is_owner()
     async def debug(self, ctx):
         channel = self.bot.get_channel(self._motd_channel)
         msg = await channel.fetch_message(channel.last_message_id)
@@ -185,11 +200,10 @@ def embed_msg_builder(title, thumbnail=None, fields=None, description=""):
         embedmsg.set_thumbnail(url=thumbnail)
     if fields != None:
         for field in fields:
-            embedmsg.add_field(name=field.name, value=field.value, inline=field.inline)
+            embedmsg.add_field(name=field._name, value=field._value, inline=field._inline)
         return embedmsg
     else:
         return embedmsg
-    
     
 class Faded_Bot:
     _bot = None
@@ -203,7 +217,7 @@ class Faded_Bot:
     _discord_motd_channel = 0
     _discord_admin_roles = []
     
-    def __init__(self, debug = False):
+    def __init__(self, debug = False):       
         self._bot = commands.Bot(command_prefix='g!',description='g!help for help :P')
         self._members = members.Members()
         self._config = config.Config()
@@ -216,13 +230,14 @@ class Faded_Bot:
                                     self._discord_raid_channel,
                                     self._discord_motd_channel))
         
-        self._bot.add_cog(Startup(self._bot))
+        self._bot.add_cog(Control(self._bot))
         self._bot.add_cog(User(self._bot,self._gw2api,self._members))
         self._bot.add_cog(Update(self._bot,
                                  self._gw2api,
                                  'Vote for which Raid Wing you want training for this week',
                                  self._discord_raid_channel,
-                                 self._discord_motd_channel))
+                                 self._discord_motd_channel,
+                                 self._discord_admin_roles))
         
     def assign_config(self):
         self._gw2_token = self._config.gw2_token
@@ -231,7 +246,20 @@ class Faded_Bot:
         self._discord_motd_channel = int(self._config.discord_motd_channel)
         self._discord_admin_roles = self._config.discord_admin_roles
         
+    def scheduler_thread(self, interval=1):
+        thread_stop = threading.Event()
+    
+        def run():
+            while not thread_stop.is_set():
+                schedule.run_pending()
+                time.sleep(interval)
+                
+        thread = threading.Thread(target=run)
+        thread.start()
+        return thread_stop 
+        
     def start(self):
+        self.scheduler_thread()
         nest_asyncio.apply()
         self._bot.run(self._discord_token)
         
