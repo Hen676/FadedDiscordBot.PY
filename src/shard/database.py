@@ -3,6 +3,13 @@ import appdirs
 import sqlite3
 from sqlite3 import Error
 
+sql_create_user_table = """
+
+"""
+sql_create_shard_table = """
+
+"""
+
 
 def get_file_path():
     path = appdirs.user_log_dir('FadedBotApp', 'Hen676')
@@ -52,8 +59,8 @@ class database:
             print(e)
 
     def dump(self):
-        cursor = self.conn.execute("select sql from sqlite_master where type = 'table'")
-        print(cursor)
+        for line in self.conn.iterdump():
+            print(line)
 
     def commit(self):
         self.conn.commit()
@@ -61,3 +68,11 @@ class database:
     def close(self):
         self.commit()
         self.conn.close()
+
+
+if __name__ == '__main__':
+    database = database(debug=True)
+    database.execute(sql_create_user_table)
+    database.execute(sql_create_shard_table)
+    database.dump()
+    database.close()

@@ -172,6 +172,7 @@ class Update(commands.Cog):
     @motd_update.before_loop
     async def before_motd_update(self):
         await self.bot.wait_until_ready()
+        await asyncio.sleep(discordSchedule.sleep_to_next_hour())
 
     @raid_update.before_loop
     async def before_raid_update(self):

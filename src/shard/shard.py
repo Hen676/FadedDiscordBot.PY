@@ -4,9 +4,9 @@ from src.shard.database import database
 class Shard:
     _database = None
     _token = ""
-    _motd_channel: int = 0
-    _raid_channel: int = 0
-    _raid_log_channel: int = 0
+    _motd_channel = 0
+    _raid_channel = 0
+    _raid_log_channel = 0
     _guild_token = ""
     _guild_id = ""
 
