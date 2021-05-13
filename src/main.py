@@ -19,10 +19,10 @@ import bot
 
 if '__main__' == __name__:
     # run client 
-    logging.basicConfig(filename='debug.log',
+    logging.basicConfig(filename='../debug.log',
                         level=logging.INFO,
                         format='%(asctime)s %(message)s',
                         datefmt='%d/%m/%Y %I:%M:%S %p')
-    
-    faded_bot = bot.Faded_Bot()
+
+    faded_bot = bot.FadedBot()
     faded_bot.start()

@@ -62,8 +62,9 @@ def backup_file_if_exists(filepath: str):
     shutil.copyfile(filepath, backup_path)
     return True
 
+
 def get_config_dir_path():
-    path = appdirs.user_config_dir('FadedBotApp','Hen676')
+    path = appdirs.user_config_dir('FadedBotApp', 'Hen676')
     if not os.path.isdir(path):
         os.makedirs(path)
     return path
