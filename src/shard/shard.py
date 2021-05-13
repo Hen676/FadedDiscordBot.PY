@@ -1,41 +1,21 @@
-import secrets
-from enum import Enum
-from typing import Optional
-
-
-class RaidEmoji(Enum):
-    """
-    Raid emoji enum
-    """
-    ONE = '1️⃣'
-    TWO = '2️⃣'
-    THREE = '3️⃣'
-    FOUR = '4️⃣'
-    FIVE = '5️⃣'
-    SIX = '6️⃣'
-    SEVEN = '7️⃣'
-
-    @classmethod
-    def has_value(cls, value):
-        return value in cls._value2member_map_
+from src.shard.database import database
 
 
 class Shard:
+    _database = None
     _token = ""
-    _id: int = 0
     _motd_channel: int = 0
     _raid_channel: int = 0
     _raid_log_channel: int = 0
     _guild_token = ""
     _guild_id = ""
 
-    def __init__(self):
-        print("will get values via db")
+    def __init__(self, data: database, id: int):
+        self.id = id
+        self._database = data
+        self.get_shard_from_db()
 
-    @property
-    def get_id(self):
-        return self._id
-
-    @property
-    def get_motd_channel(self):
-        return self._motd_channel
+    def get_shard_from_db(self):
+        cursor = self._database.execute("SELECT * FROM Shard Where shardid=:shard_id",
+                                        {"shard_id": self.id})
+        print(cursor)
