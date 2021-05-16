@@ -6,9 +6,16 @@ from sqlite3 import Error
 sql_create_user_table = """
 
 """
+sql_create_log_table = """
+
+"""
+sql_create_log_user_table = """
+
+"""
 sql_create_shard_table = """
 
 """
+tables = [sql_create_user_table, sql_create_shard_table, sql_create_log_table, sql_create_log_user_table]
 
 
 def get_file_path():
@@ -26,15 +33,15 @@ class database:
     def __init__(self, debug: bool = False):
         self.path = os.path.join(get_file_path(), "Faded_sqlite.db")
         self.debug = debug
-        self.conn = self.create_connection()
+        self.conn = self._create_connection()
 
-    def create_connection(self):
+    def _create_connection(self):
         conn = None
         try:
-            if not self.debug:
-                conn = sqlite3.connect(self.path)
-            else:
+            if self.debug:
                 conn = sqlite3.connect(':memory:')
+            else:
+                conn = sqlite3.connect(self.path)
             return conn
         except Error as e:
             print(e)
@@ -59,6 +66,9 @@ class database:
             print(e)
 
     def dump(self):
+        """
+        Dump Database
+        """
         for line in self.conn.iterdump():
             print(line)
 
@@ -72,7 +82,7 @@ class database:
 
 if __name__ == '__main__':
     database = database(debug=True)
-    database.execute(sql_create_user_table)
-    database.execute(sql_create_shard_table)
+    for table in tables:
+        database.execute(table)
     database.dump()
     database.close()

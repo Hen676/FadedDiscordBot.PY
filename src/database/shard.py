@@ -1,4 +1,4 @@
-from src.shard.database import database
+from src.database.database import database
 
 
 class Shard:
