@@ -18,6 +18,7 @@ sql_create_shard_table = """
 
 """
 tables = [sql_create_user_table, sql_create_shard_table, sql_create_log_table, sql_create_log_user_table]
+tables_name = ["", "", "", ""]
 
 
 def get_file_path():
@@ -66,6 +67,22 @@ class Database:
         except Error as e:
             print(e)
 
+    def check_tables(self, name: str):
+        """
+        Checks if table exists
+
+        :param name:
+        :return bool:
+        """
+        toggle = False
+        try:
+            c = self.conn.cursor()
+            c.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND name=:table_name;", {"table_name": name})
+            toggle = c.fetchone()[0] == 1
+        except Error as e:
+            print(e)
+        return toggle
+
     def dump(self):
         """
         Dump Database
@@ -85,6 +102,8 @@ if __name__ == '__main__':
     database = Database(debug=True)
     for table in tables:
         database.execute(table)
+    for name in tables_name:
+        print("{name} table is {toggle}".format(name=name, toggle=database.check_tables(name)))
     database.commit()
     database.dump()
     database.close()
