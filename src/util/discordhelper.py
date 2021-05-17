@@ -1,5 +1,6 @@
 from typing import Optional
 import discord
+import random
 
 
 class Field:
@@ -17,6 +18,10 @@ class Field:
         self.inline = inline
 
 
+def _random_hex_color():
+    return "#{:06x}".format(random.randint(0, 0xFFFFFF))
+
+
 def embed_msg_builder(title, description="", thumbnail: Optional[str] = None, fields: Optional[list[Field]] = None):
     """
     Create an embed msg for discord
@@ -27,7 +32,7 @@ def embed_msg_builder(title, description="", thumbnail: Optional[str] = None, fi
     :param fields: list of fields for embed
     :return: embed(object): discord embed
     """
-    embedmsg = discord.Embed(title=title, color=0x00ff00, description=description)
+    embedmsg = discord.Embed(title=title, color=_random_hex_color(), description=description)
     if thumbnail is not None:
         embedmsg.set_thumbnail(url=thumbnail)
     if fields is not None:
