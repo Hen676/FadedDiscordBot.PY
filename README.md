@@ -1,5 +1,5 @@
 # Faded-Discord-Bot
-___
+
 ![Discord](https://discord.com/api/guilds/424618984302706689/embed.png)
 ![License](https://img.shields.io/github/license/Hen676/Faded-Discord-Bot)
 ![Size](https://img.shields.io/github/repo-size/Hen676/Faded-Discord-Bot)
