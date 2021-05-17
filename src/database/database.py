@@ -1,4 +1,6 @@
 import os
+import sys
+
 import appdirs
 import sqlite3
 from sqlite3 import Error
@@ -25,7 +27,7 @@ def get_file_path():
     return path
 
 
-class database:
+class Database:
     conn = None
     path = ""
     debug = False
@@ -34,6 +36,8 @@ class database:
         self.path = os.path.join(get_file_path(), "Faded_sqlite.db")
         self.debug = debug
         self.conn = self._create_connection()
+        if self.conn is None:
+            sys.exit("Failed to create Database with path: {path}".format(path=self.path))
 
     def _create_connection(self):
         conn = None
@@ -42,12 +46,9 @@ class database:
                 conn = sqlite3.connect(':memory:')
             else:
                 conn = sqlite3.connect(self.path)
-            return conn
         except Error as e:
             print(e)
-        finally:
-            if conn:
-                conn.close()
+        return conn
 
     def execute(self, sql: str, dic: dict = None):
         """
@@ -81,8 +82,9 @@ class database:
 
 
 if __name__ == '__main__':
-    database = database(debug=True)
+    database = Database(debug=True)
     for table in tables:
         database.execute(table)
+    database.commit()
     database.dump()
     database.close()

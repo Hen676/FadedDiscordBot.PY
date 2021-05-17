@@ -18,3 +18,10 @@ class Control(commands.Cog):
     async def on_ready(self):
         await self.bot.change_presence(activity=discord.Game(name='Wash Your Hands'))
         logging.info('We have logged in as {0.user}'.format(self.bot))
+
+    @commands.command(
+        help=''
+    )
+    @commands.has_permissions(administrator=True)
+    async def analytics(self, ctx):
+        print("TODO")

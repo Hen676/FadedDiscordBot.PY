@@ -36,3 +36,7 @@ def embed_msg_builder(title, description="", thumbnail: Optional[str] = None, fi
         return embedmsg
     else:
         return embedmsg
+
+
+def embed_loading_msg(description):
+    return embed_msg_builder(title="Loading", description=description, thumbnail="https://imgur.com/gVRSRmt.gif")

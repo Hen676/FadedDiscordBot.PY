@@ -42,6 +42,7 @@ class User(commands.Cog):
             self._members.save_members()
             await ctx.author.add_roles(role)
 
+    #TODO: Needs rework
     @commands.command(
         help='Takes account name and returns users guild information',
         brief='Shows users guild information'
