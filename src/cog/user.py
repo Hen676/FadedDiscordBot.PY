@@ -1,8 +1,8 @@
-import logging
+#!/usr/bin/env python3.7
 
+import logging
 import discord
 from discord.ext import commands
-
 from src.util import discordhelper
 from src.util.discordhelper import Field
 

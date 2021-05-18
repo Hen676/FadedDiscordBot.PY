@@ -1,13 +1,4 @@
 #!/usr/bin/env python3.7
-"""
-Created on Wed May  5 10:42:38 2021
-
-discordScheduler.py: functions to help with discord event loops
-"""
-__author__ = "Henry John Timms"
-__copyright__ = "Copyright 2021, Henry John Timms"
-__license__ = "MIT"
-__version__ = '1.0.0'
 
 from datetime import datetime, timedelta
 from typing import Optional

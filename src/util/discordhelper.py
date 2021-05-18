@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.7
+
 from typing import Optional
 import discord
 import random

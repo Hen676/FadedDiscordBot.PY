@@ -1,13 +1,4 @@
 #!/usr/bin/env python3.7
-"""
-Created on Sat Feb  6 13:04:51 2021
-
-bot.py: brains of the bot
-"""
-__author__ = "Henry John Timms"
-__copyright__ = "Copyright 2021, Henry John Timms"
-__license__ = "MIT"
-__version__ = '1.3.0'
 
 from discord.ext import commands
 import config

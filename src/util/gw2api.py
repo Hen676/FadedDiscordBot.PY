@@ -1,13 +1,4 @@
 #!/usr/bin/env python3.7
-"""
-Created on Mon Feb  8 15:17:40 2021
-
-gw2api.py: Access gw2 api information and format it.
-"""
-__author__ = "Henry John Timms"
-__copyright__ = "Copyright 2021, Henry John Timms"
-__license__ = "MIT"
-__version__ = '1.0.1'
 
 import requests
 import logging
@@ -78,8 +69,7 @@ class GuildApi:
         """
         Call GW2-API and get members. find if user is in the guild.
 
-        :param string name: account name
-
+        :param name: account name
         :return bool: true if user is in guild
         """
 
@@ -100,8 +90,7 @@ class GuildApi:
         """
         Call GW2-API and get members. find if user is in the guild. if yes, print users information.
 
-        :param string name: account name
-        
+        :param name: account name
         :return User: user object containing user info
         """
 

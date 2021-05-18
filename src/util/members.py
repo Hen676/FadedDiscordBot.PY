@@ -1,13 +1,4 @@
 #!/usr/bin/env python3.7
-"""
-Created on Sat Mar 13 11:55:01 2021
-
-members.py: Read and Write User Dictionary to a json file.
-"""
-__author__ = "Henry John Timms"
-__copyright__ = "Copyright 2021, Henry John Timms"
-__license__ = "MIT"
-__version__ = '1.0.0'
 
 import json
 import os

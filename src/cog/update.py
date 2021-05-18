@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.7
+
 import asyncio
 import logging
 from enum import Enum

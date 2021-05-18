@@ -82,18 +82,18 @@ class Database:
         except Error as e:
             print(e)
 
-    def check_tables(self, name: str):
+    def check_tables(self, table_name: str):
         """
         Checks if table exists
 
-        :param name:
+        :param table_name: table name
         :return bool:
         """
         toggle = False
         try:
             c = self.conn.cursor()
             c.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND name=:table_name;",
-                      {"table_name": name})
+                      {"table_name": table_name})
             toggle = c.fetchone()[0] == 1
         except Error as e:
             print(e)

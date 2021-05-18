@@ -1,4 +1,6 @@
-from src.database.database import database
+#!/usr/bin/env python3.7
+
+from src.database.database import Database
 
 
 class Shard:
@@ -10,7 +12,7 @@ class Shard:
     _guild_token = ""
     _guild_id = ""
 
-    def __init__(self, data: database, id: int):
+    def __init__(self, data: Database, id: int):
         self.id = id
         self._database = data
         self.get_shard_from_db()

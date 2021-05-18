@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # SPDX-License-Identifier: MIT
 
 """config.py: Read and write bot config to a json file."""
