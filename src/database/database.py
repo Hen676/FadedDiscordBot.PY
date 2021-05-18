@@ -1,6 +1,7 @@
+#!/usr/bin/env python3.7
+
 import os
 import sys
-
 import appdirs
 import sqlite3
 from sqlite3 import Error

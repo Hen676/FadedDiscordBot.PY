@@ -2,9 +2,9 @@
 """
 Created on Sat Apr  3 14:11:00 2021
 
-__main__.py: Faded Vanguard Discord Bot main
+__main__.py: Faded Vanguard Discord Bot
 
-Todo:
+TODO:
     * clean code
     * add custom rich presences (aka playing "wash your hands")
 """
