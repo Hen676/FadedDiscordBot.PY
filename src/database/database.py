@@ -8,9 +8,8 @@ from sqlite3 import Error
 
 sql_create_user_table = """CREATE TABLE user(
 gwaccount VARCHAR(30),
-discordid VARCHAR(30),
-token CHAR(36),
-CONSTRAINT comp_key PRIMARY KEY (gwaccount, discordid)
+discordid VARCHAR(30) PRIMARY KEY,
+token CHAR(36)
 );"""
 sql_create_evtc_table = """CREATE TABLE evtc(
 url VARCHAR(80) PRIMARY KEY,
@@ -46,59 +45,58 @@ def get_file_path():
 
 class Database:
     conn = None
+    curs = None
     path = ""
     debug = False
 
     def __init__(self, debug: bool = False):
         self.path = os.path.join(get_file_path(), "Faded_sqlite.db")
         self.debug = debug
-        self.conn = self._create_connection()
+        self._create_connection()
         if self.conn is None:
             sys.exit("Failed to create Database with path: {path}".format(path=self.path))
 
     def _create_connection(self):
-        conn = None
         try:
             if self.debug:
-                conn = sqlite3.connect(':memory:')
+                self.conn = sqlite3.connect(':memory:')
             else:
-                conn = sqlite3.connect(self.path)
+                self.conn = sqlite3.connect(self.path)
+            self.curs = self.conn.cursor()
         except Error as e:
             print(e)
-        return conn
 
-    def execute(self, sql: str, dic: dict = None):
+    def execute(self, sql: str, dic=None, single=False, commit=False):
         """
-        Creates a Table in conn database
+        Executes SQL in database
 
-        :param string sql: SQL to Execute
+        :param commit: Commit Database cmd
+        :param single: Return multiple or one result
+        :param sql: SQL to Execute
         :param dic: Dictionary for SQL cmd
+        :return: Row or Rows of data requested
         """
-        try:
-            c = self.conn.cursor()
-            if dic is None:
-                c.execute(sql)
+        if dic is None:
+            dic = {}
+        with self.conn:
+            self.curs.execute(sql, dic)
+        if commit:
+            self.conn.commit()
+        else:
+            if single:
+                return self.curs.fetchone()
             else:
-                c.execute(sql, dic)
-        except Error as e:
-            print(e)
+                return self.curs.fetchall()
 
     def check_tables(self, table_name: str):
         """
         Checks if table exists
 
         :param table_name: table name
-        :return bool:
+        :return: bool
         """
-        toggle = False
-        try:
-            c = self.conn.cursor()
-            c.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND name=:table_name;",
-                      {"table_name": table_name})
-            toggle = c.fetchone()[0] == 1
-        except Error as e:
-            print(e)
-        return toggle
+        return self.execute(sql="SELECT count(name) FROM sqlite_master WHERE type='table' AND name=:table_name;",
+                            dic={"table_name": table_name})[0] == 1
 
     def dump(self):
         """
