@@ -24,6 +24,8 @@ class RaidEmoji(Enum):
         return value in cls._value2member_map_
 
 
+# TODO: toggles?
+# TODO: db Rework
 class Update(commands.Cog):
     _raid_channel = 0
     _motd_channel = 0

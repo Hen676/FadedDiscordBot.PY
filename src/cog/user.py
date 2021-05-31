@@ -3,19 +3,23 @@
 import logging
 import discord
 from discord.ext import commands
-from src.util import discordhelper
+from src.util import discordhelper, gw2api
 from src.util.discordhelper import Field
+import src.database.user as us
 
 
 class User(commands.Cog):
     _gw2api = None
     _members = None
+    _user = None
 
-    def __init__(self, bot, gw2api_module, members_module):
+    def __init__(self, bot, database, gw2api_module, members_module):
         self.bot = bot
+        self._user = us.User(database)
         self._gw2api = gw2api_module
         self._members = members_module
 
+    # TODO: Finalising
     @commands.command(
         help='',
         brief=''
@@ -28,28 +32,21 @@ class User(commands.Cog):
             if channel is None:
                 channel = await ctx.author.create_dm()
             await channel.send("Call the command here")
+        if gw2api.check_token(arg):
+            self._user.create_user(discord_id=ctx.author.id, token=arg)
+            ctx.send("Token added to user {}".format(ctx.author.name), delete_after=60)
 
-    @commands.command(
-        help='Takes account name and if there in the guild add them as a member',
-        brief='Adds user to member rank if there in the guild'
-    )
-    async def new(self, ctx, arg):
-        logging.debug('Calling new cmd')
-        if self._gw2api.user_in_guild(arg):
-            # add role to user
-            role = discord.utils.get(ctx.author.guild.roles, name='Member')
-            self._members.add_member(ctx.author.id, arg)
-            self._members.save_members()
-            await ctx.author.add_roles(role)
-
-    # TODO: Needs rework
+    # TODO: db Rework
     @commands.command(
         help='Takes account name and returns users guild information',
         brief='Shows users guild information'
     )
-    async def user(self, ctx, arg):
+    async def user(self, ctx):
         logging.debug('Calling user cmd')
-        info = self._gw2api.user_guild_info(arg)
+        user = self._user.get_user(ctx.author.id)
+        if not len(user) == 1:
+            return
+        info = self._gw2api.user_guild_info(user[0][0])
         if info is None:
             return
         async with ctx.channel.typing():

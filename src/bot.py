@@ -20,7 +20,7 @@ class FadedBot:
     _cogs = []
 
     def __init__(self, debug=False):
-        self._bot = commands.Bot(command_prefix='f!', description='f!help for help :P')
+        self._bot = commands.Bot(command_prefix='f!', description='f!help for help :P', owner_id=254640751990931457)
         self._members = members.Members()
         self._config = config.Config()
         self.assign_config()

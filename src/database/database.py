@@ -27,13 +27,16 @@ FOREIGN KEY (evtc) REFERENCES evtc(url)
 sql_create_shard_table = """CREATE TABLE shard(
 shardid INT PRIMARY KEY,
 guildid CHAR(36),
-token CHAR(36),
+ownerid INT,
 motdchannel INT, 
 raidchannel INT,
 raidlogchannel INT 
+FOREIGN KEY (owner) REFERENCES user(discordid)
 );"""
-tables = [sql_create_shard_table, sql_create_user_table, sql_create_evtc_table, sql_create_evtc_user_table]
-tables_name = ["shard", "user", "evtc", "evtcuser"]
+tables = {"shard": sql_create_shard_table,
+          "user": sql_create_user_table,
+          "evtc": sql_create_evtc_table,
+          "evtcuser": sql_create_evtc_user_table}
 
 
 def get_file_path():
@@ -115,10 +118,9 @@ class Database:
 
 if __name__ == '__main__':
     database = Database(debug=True)
-    for table in tables:
-        database.execute(table)
-    for name in tables_name:
-        print("{name} table is {toggle}".format(name=name, toggle=database.check_tables(name)))
+    for name, val in tables.items():
+        if not database.check_tables(name):
+            database.execute(val)
     database.commit()
     database.dump()
     database.close()

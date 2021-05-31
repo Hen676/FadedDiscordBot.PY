@@ -29,6 +29,7 @@ class User:
         return self._rank_icon
 
 
+# TODO: db Rework
 class GuildApi:
     _url = "http://api.guildwars2.com"
     _extension_rank = "/v2/guild/0f5f2161-607e-e511-aa11-ac162daae275/ranks?access_token="
@@ -113,6 +114,16 @@ class GuildApi:
                 else:
                     return None
         return None
+
+
+def check_token(arg):
+    token_url = "https://api.guildwars2.com/v2/tokeninfo?access_token="
+    r = requests.get(token_url + arg, auth=('user', 'pass'))
+    if r.status_code != 200:
+        return False
+    if "id" in r.json():
+        return True
+    return False
 
 
 if '__main__' == __name__:
